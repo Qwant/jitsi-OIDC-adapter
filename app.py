@@ -16,6 +16,7 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 import base64
 import configparser
+import sys
 
 # Load configurations
 config = configparser.ConfigParser()
@@ -23,12 +24,19 @@ config.read('app.conf')
 
 # Setup logging based on configuration file
 logging_level = getattr(logging, config['logging']['level'].upper(), logging.INFO)
-logging.basicConfig(
-    level=logging_level,
-    filename=config['logging']['filename'],
-    filemode=config['logging']['filemode'],
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
+if config['logging']['filename'] == "stdout":
+    handler = logging.StreamHandler(sys.stdout)
+else:
+    handler = logging.FileHandler(
+        filename=config['logging']['filename'],
+        filemode=config['logging']['filemode'],
+    )
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+
+logger = logging.getLogger()
+logger.setLevel(logging_level)
+logger.addHandler(handler)
 
 app = Flask(__name__)
 app.secret_key = secrets.token_urlsafe(16)
