@@ -73,6 +73,8 @@ try:
     access_token_url = get_config_value('oauth', 'access_token_url', None)
     scope = get_config_value('oauth', 'scope')
     jwks_uri = get_config_value('oauth', 'jwks_uri', None)
+    oidc_displayName_field = get_config_value('oauth', 'oidc_displayName_field', 'displayName')
+    oidc_email_field = get_config_value('oauth', 'oidc_email_field', 'email')
     
     # Well-known URLs
     jitsi_base = get_config_value('urls', 'jitsi_base')
@@ -294,12 +296,12 @@ def oauth_callback():
             logging.error("ID token not found")
             return "ID token not found", 500
 
-        email = id_token.get('email')
+        email = id_token.get(oidc_email_field)
         avatar_url = get_gravatar_url(email) if email else 'http://example.com/default-avatar.png'
 
         session['user_info'] = {
-            'name': id_token.get('displayName', 'Change me'),
-            'email': id_token.get('email', 'no-email@example.com'),
+            'name': id_token.get(oidc_displayName_field, 'Change me'),
+            'email': id_token.get(oidc_email_field, 'no-email@example.com'),
             'avatar': avatar_url
         }
 
