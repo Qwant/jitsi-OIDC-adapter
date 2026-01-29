@@ -17,10 +17,11 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 import base64
 import configparser
 import sys
+import os
 
 # Load configurations
 config = configparser.ConfigParser()
-config.read('app.conf')
+config.read(os.getenv("JITSI_OIDC_ADAPTER_CONFIG", "app.conf"))
 
 # Setup logging based on configuration file
 logging_level = getattr(logging, config['logging']['level'].upper(), logging.INFO)
@@ -49,11 +50,6 @@ app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 Session(app)
 
 oauth = OAuth(app)
-
-config = configparser.ConfigParser()
-
-# Read the configuration file
-config.read('app.conf')
 
 # Function to get config value with fallback
 def get_config_value(section, key, fallback=None):
