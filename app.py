@@ -301,7 +301,7 @@ def oauth_callback():
             return "ID token not found", 500
 
         email = id_token.get(oidc_email_field)
-        avatar_url = get_gravatar_url(email) if email else 'http://example.com/default-avatar.png'
+        avatar_url = get_gravatar_url(email) if email else ''
 
         session['user_info'] = {
             'name': id_token.get(oidc_displayName_field, 'Change me'),
@@ -320,7 +320,7 @@ def get_gravatar_url(email):
         return None
     email = email.strip().lower()
     email_hash = hashlib.sha256(email.encode('utf-8')).hexdigest()
-    return f"https://www.gravatar.com/avatar/{email_hash}"
+    return f"https://www.gravatar.com/avatar/{email_hash}?d=404"
 
 def exchange_code_for_token(code):
     try:
